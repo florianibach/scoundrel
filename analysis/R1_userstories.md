@@ -7,6 +7,7 @@ R1 implementiert **ausschließlich den Classic Mode (Vanilla Rules)** als kompet
 - Solo-Kartenspiel mit reduzierten Deck-Regeln.
 - Ein Run startet mit 20 HP.
 - Das Spiel endet mit **Win** (Deck leer und regelkonform abgeschlossen) oder **Loss** (HP <= 0).
+- **Clear-Regel in R1 Vanilla:** Wenn der Spieler **nicht** läuft (Run), muss er **3 von 4 Karten** im aktuellen Room auflösen, bevor ein neuer Room erscheint.
 - Ergebnisse werden für Profile/Statistiken/Leaderboard persistent gespeichert.
 
 ---
@@ -18,6 +19,7 @@ R1 implementiert **ausschließlich den Classic Mode (Vanilla Rules)** als kompet
 - **Waffenkarten**: Diamonds (♦).
 - **Heiltränke**: Hearts (♥).
 - **Run-Aktion**: Raum überspringen; darf nicht zweimal hintereinander verwendet werden.
+- **Room Clear**: Wenn kein Run gewählt wird, müssen genau 3 der 4 Room-Karten bearbeitet werden; die 4. Karte wird in den nächsten Room übernommen.
 - **Aktive Waffe**: aktuell ausgerüstete Waffe (optional vorhanden), deren Wirksamkeit nach Kämpfen degradiert.
 - **Ruleset**: Für R1 immer `vanilla`.
 
@@ -94,7 +96,9 @@ Der Spieler interagiert mit Karten im Room:
 - **Heiltrank (♥)** -> trinken (HP erhöhen)
 - Zusätzlich global: **Run** zum Überspringen des aktuellen Rooms (unter Run-Regel)
 
-Nach jeder Aktion wird der Zustand aktualisiert und bei leerem/aufgelöstem Room entsprechend neue Karten nachgezogen.
+Nach jeder Aktion wird der Zustand aktualisiert. Für R1 gilt zusätzlich die Clear-Regel:
+- Wenn **kein Run** gewählt wird, muss der Spieler **3 von 4 Karten** des Rooms auflösen.
+- Danach wird der Room erneuert; eine verbleibende 4. Karte wird in den nächsten Room übernommen und mit neuen Karten aus dem Deck auf bis zu 4 Karten aufgefüllt.
 
 ### Acceptance Criteria (AC)
 1. **Nur valide Aktionen je Kartentyp**  
@@ -108,6 +112,13 @@ Nach jeder Aktion wird der Zustand aktualisiert und bei leerem/aufgelöstem Room
    **Then** wird sie fachlich abgewiesen (kein stilles Durchwinken, kein inkonsistenter State).
 4. **Turn-Counter**  
    **Then** erhöht jede erfolgreiche Spieleraktion den Zähler `turns` um 1.
+5. **Clear-Regel ohne Run**  
+   **Given** der Spieler hat im aktuellen Room kein Run verwendet  
+   **When** 3 der 4 Karten regelkonform aufgelöst wurden  
+   **Then** endet der Room, die verbleibende Karte wird übernommen und der nächste Room auf bis zu 4 Karten aufgefüllt.
+6. **Kein vorzeitiger Room-Wechsel ohne Run**  
+   **Given** weniger als 3 Karten im Room wurden aufgelöst und kein Run wurde genutzt  
+   **Then** darf kein neuer Room erzeugt werden.
 
 ---
 
@@ -199,7 +210,9 @@ Hearts-Karten repräsentieren Heiltränke. Bei Nutzung erhöhen sie HP. Es gelte
 **damit** ich taktische Ausweichentscheidungen treffen kann, ohne das Spiel zu trivialisieren.
 
 ### Beschreibung
-Die Aktion **Run** überspringt den aktuellen Room und erzeugt einen neuen Room aus dem Restdeck. Fachregel: **Run darf nicht zweimal direkt hintereinander** ausgeführt werden.
+Die Aktion **Run** überspringt den aktuellen Room und erzeugt einen neuen Room aus dem Restdeck. Fachregeln:
+- **Run darf nicht zweimal direkt hintereinander** ausgeführt werden.
+- Wenn **kein Run** gewählt wird, greift die Clear-Regel: **3 von 4 Karten** müssen bearbeitet werden, bevor der Room wechselt.
 
 ### Acceptance Criteria (AC)
 1. **Run-Aktion vorhanden**  
@@ -228,7 +241,7 @@ Die Aktion **Run** überspringt den aktuellen Room und erzeugt einen neuen Room 
 ### Beschreibung
 Run endet in zwei Fällen:
 - **Loss**: HP <= 0.
-- **Win**: Deck ist vollständig verbraucht und es verbleiben keine aufzulösenden Karten/ausstehenden Aktionen gemäß Vanilla.
+- **Win**: Deck ist vollständig verbraucht und es verbleiben keine aufzulösenden Karten/ausstehenden Aktionen gemäß Vanilla inkl. Clear-Regel (3-aus-4-Logik).
 
 Nach Endzustand sind keine weiteren Spielaktionen mehr zulässig.
 

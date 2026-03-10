@@ -6,7 +6,7 @@ Diese DoD gilt für **alle R1-User-Stories** (Classic Mode / Vanilla) und ist er
 - Story-Ziel, Scope und Nicht-Ziele sind klar dokumentiert.
 - Alle zugehörigen Acceptance Criteria sind implementiert und einzeln überprüfbar.
 - Fachliche Begriffe sind einheitlich (Run, Room, Monster, Weapon, Potion, Ruleset `vanilla`).
-- Endbedingungen (Win/Loss) und Run-Regeln (kein doppelter Run) sind vollständig umgesetzt.
+- Endbedingungen (Win/Loss), Run-Regeln (kein doppelter Run) und die Clear-Regel (ohne Run: 3 von 4 Karten auflösen) sind vollständig umgesetzt.
 
 ## 2) Funktionale Qualität
 - Happy Path und relevante Edge Cases funktionieren (z. B. HP-Grenzen, Deck-Ende, doppelte Endevents).
@@ -27,9 +27,9 @@ Diese DoD gilt für **alle R1-User-Stories** (Classic Mode / Vanilla) und ist er
 - Leaderboard zeigt nur Classic-Mode-Daten (`vanilla`) und klar definierte Rankings.
 
 ## 5) Tests & Nachweise
-- Unit-Tests für Kernregeln vorhanden (Deckbau, Kampf, Waffendegradation, Run-Regel, Endbedingungen).
+- Unit-Tests für Kernregeln vorhanden (Deckbau, Kampf, Waffendegradation, Run-Regel, Clear-Regel 3-von-4, Endbedingungen).
 - Integrationstests für End-to-End-Run vorhanden (Start -> Aktionen -> Endzustand -> Persistenz).
-- Negative Tests vorhanden (ungültige Aktion, doppelter Run, Aktion nach Run-Ende).
+- Negative Tests vorhanden (ungültige Aktion, doppelter Run, vorzeitiger Room-Wechsel vor 3 Aktionen ohne Run, Aktion nach Run-Ende).
 - Alle Tests laufen im CI erfolgreich durch.
 - Testfälle sind nachvollziehbar mit den ACs verknüpft (Traceability).
 
