@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: ./backend
+    container_name: scoundrel-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - scoundrel-data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: scoundrel-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  scoundrel-data:
